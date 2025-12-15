@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Powered Testing - Gemini</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .back-link {
+            color: white;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 6px;
+        }
+
+        .back-link:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .card h2 {
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .btn {
+            padding: 14px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-test {
+            background: #28a745;
+            color: white;
+            margin-right: 10px;
+        }
+
+        .btn-test:hover {
+            background: #218838;
+        }
+
+        .form-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .form-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .form-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+
+        .form-card.selected {
+            border-color: #667eea;
+            background: #e7f0ff;
+        }
+
+        .test-case {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .test-case h4 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .test-case-actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .payload-view {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+
+        .test-result {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+
+        .test-result.success {
+            border-left: 4px solid #28a745;
+        }
+
+        .test-result.failure {
+            border-left: 4px solid #dc3545;
+        }
+
+        .screenshot-view {
+            margin-top: 15px;
+            max-width: 100%;
+        }
+
+        .screenshot-view img {
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            border: 4px solid rgba(102, 126, 234, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid #667eea;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 5px;
+        }
+
+        .badge-success { background: #d4edda; color: #155724; }
+        .badge-danger { background: #f8d7da; color: #721c24; }
+        .badge-warning { background: #fff3cd; color: #856404; }
+        .badge-info { background: #d1ecf1; color: #0c5460; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 AI-Powered Form Testing</h1>
+            <p>Sử dụng Gemini AI để tự động generate test data và execute tests</p>
+            <a href="/" class="back-link">← Quay lại Analysis</a>
+        </div>
+
+        <!-- Step 1: Select Form -->
+        <div class="card" id="step1Card">
+            <h2>📋 Bước 1: Chọn Form để test</h2>
+            <div id="formsList"></div>
+        </div>
+
+        <!-- Step 2: Generate Tests -->
+        <div class="card" id="step2Card" style="display: none;">
+            <h2>🤖 Bước 2: Generate Test Cases (Gemini AI)</h2>
+            
+            <!-- API Key Input -->
+            <div style="margin-bottom: 20px; padding: 15px; background: #fff3cd; border-radius: 8px; border: 1px solid #ffc107;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600;">🔑 Gemini API Key:</label>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <input type="text" id="apiKeyInput" placeholder="Nhập API key nếu hết hạn..." style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                    <button id="saveApiKeyBtn" class="btn" style="background: #ffc107; color: #000;">💾 Lưu API Key</button>
+                    <span id="apiKeyStatus" style="font-size: 12px; color: #666;"></span>
+                </div>
+                <small style="color: #856404; display: block; margin-top: 5px;">
+                    API key được lưu trong localStorage của browser. Lấy key miễn phí tại: 
+                    <a href="https://aistudio.google.com/app/apikey" target="_blank">Google AI Studio</a>
+                </small>
+            </div>
+            
+            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                <button id="generateBtn" class="btn btn-primary">
+                    ✨ Generate Test Cases với Gemini AI
+                </button>
+                <button id="exportPromptBtn" class="btn" style="background: #6c757d;">
+                    📝 Xuất Prompt (Fallback)
+                </button>
+            </div>
+            
+            <!-- Fallback manual input -->
+            <div id="manualInputSection" style="display: none; margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                <h3>📋 Paste Test Cases JSON (Thủ công)</h3>
+                <p style="color: #666; font-size: 14px;">Copy prompt ở trên, paste vào Gemini AI, sau đó copy kết quả JSON và paste vào đây:</p>
+                <textarea id="manualTestCasesInput" style="width: 100%; min-height: 300px; font-family: monospace; padding: 10px; border: 1px solid #ddd; border-radius: 4px;" placeholder='Paste JSON array từ Gemini AI vào đây...&#10;&#10;Ví dụ:&#10;[&#10;  {&#10;    "name": "Test dữ liệu hợp lệ",&#10;    "description": "...",&#10;    "payload": { ... }&#10;  }&#10;]'></textarea>
+                <button id="parseManualBtn" class="btn btn-primary" style="margin-top: 10px;">
+                    ✅ Parse và Sử dụng Test Cases
+                </button>
+            </div>
+
+            <div id="testCasesSection" style="display: none; margin-top: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h3>Generated Test Cases: <span id="testCaseCount">0</span></h3>
+                    <div style="display: flex; gap: 10px;">
+                        <button id="generateMoreBtn" class="btn" style="background: #17a2b8; color: white; display: none;">
+                            ➕ Generate Thêm
+                        </button>
+                        <button id="exportResultsBtn" class="btn" style="background: #17a2b8; color: white; display: none;">
+                            📥 Xuất Kết Quả JSON
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Generate More Options -->
+                <div id="generateMoreSection" style="display: none; background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                    <h4 style="margin-bottom: 10px;">Chọn loại test case muốn tạo thêm:</h4>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" value="boundary" class="test-type-checkbox">
+                            <span>🎯 Trường hợp biên (Min/Max)</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" value="sql-injection" class="test-type-checkbox">
+                            <span>🛡️ SQL Injection</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" value="xss" class="test-type-checkbox">
+                            <span>⚠️ XSS Test</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" value="special-chars" class="test-type-checkbox">
+                            <span>✨ Ký tự đặc biệt nâng cao</span>
+                        </label>
+                    </div>
+                    <div style="margin-top: 10px; display: flex; gap: 10px;">
+                        <button id="confirmGenerateMoreBtn" class="btn btn-primary">✅ Tạo Test Cases</button>
+                        <button id="cancelGenerateMoreBtn" class="btn" style="background: #6c757d;">❌ Hủy</button>
+                    </div>
+                </div>
+                
+                <div id="testCasesList"></div>
+            </div>
+        </div>
+
+        <!-- Test Results -->
+        <div class="card" id="resultsCard" style="display: none;">
+            <h2>📊 Test Results</h2>
+            <div id="testResults"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentResult = null;
+        let selectedFormIndex = null;
+        let testCases = [];
+        let testResults = {}; // Store test results for export
+
+        // Load API key from localStorage
+        function loadApiKey() {
+            const savedKey = localStorage.getItem('gemini_api_key');
+            if (savedKey) {
+                document.getElementById('apiKeyInput').value = savedKey;
+                updateApiKeyStatus('✅ Đã load từ localStorage');
+            }
+        }
+
+        function updateApiKeyStatus(message) {
+            document.getElementById('apiKeyStatus').textContent = message;
+            setTimeout(() => {
+                document.getElementById('apiKeyStatus').textContent = '';
+            }, 3000);
+        }
+
+        // Save API key to localStorage
+        document.getElementById('saveApiKeyBtn').addEventListener('click', () => {
+            const apiKey = document.getElementById('apiKeyInput').value.trim();
+            if (!apiKey) {
+                alert('Vui lòng nhập API key!');
+                return;
+            }
+            localStorage.setItem('gemini_api_key', apiKey);
+            updateApiKeyStatus('✅ Đã lưu API key!');
+        });
+
+        // Get current API key (from input or localStorage)
+        function getCurrentApiKey() {
+            let apiKey = document.getElementById('apiKeyInput').value.trim();
+            if (!apiKey) {
+                apiKey = localStorage.getItem('gemini_api_key');
+            }
+            return apiKey;
+        }
+
+        // Load analysis result
+        async function loadAnalysisResult() {
+            try {
+                const response = await fetch('/api/result');
+                if (!response.ok) {
+                    throw new Error('No analysis result found');
+                }
+
+                currentResult = await response.json();
+                displayForms();
+            } catch (error) {
+                alert('Vui lòng chạy phân tích form trước! Quay lại trang chủ và phân tích website.');
+                window.location.href = '/';
+            }
+        }
+
+        function displayForms() {
+            const formsListDiv = document.getElementById('formsList');
+
+            if (!currentResult || !currentResult.forms || currentResult.forms.length === 0) {
+                formsListDiv.innerHTML = '<p>Không tìm thấy form nào. Vui lòng phân tích lại.</p>';
+                return;
+            }
+
+            formsListDiv.innerHTML = '<div class="form-selector">' +
+                currentResult.forms.map((formData, index) => {
+                    const form = formData.form;
+                    return `
+                        <div class="form-card" onclick="selectForm(${index})">
+                            <h3>Form ${index + 1}</h3>
+                            <p><strong>ID:</strong> ${form.formId || 'N/A'}</p>
+                            <p><strong>Fields:</strong> ${form.fields.length}</p>
+                            <p><strong>Required:</strong> ${form.fields.filter(f => f.required).length}</p>
+                        </div>
+                    `;
+                }).join('') +
+            '</div>';
+        }
+
+        function selectForm(index) {
+            selectedFormIndex = index;
+
+            // Update UI
+            document.querySelectorAll('.form-card').forEach((card, i) => {
+                if (i === index) {
+                    card.classList.add('selected');
+                } else {
+                    card.classList.remove('selected');
+                }
+            });
+
+            // Show step 2
+            document.getElementById('step2Card').style.display = 'block';
+            document.getElementById('step2Card').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Generate test cases
+        document.getElementById('generateBtn').addEventListener('click', async () => {
+            if (selectedFormIndex === null) {
+                alert('Vui lòng chọn form trước!');
+                return;
+            }
+
+            const apiKey = getCurrentApiKey();
+            if (!apiKey) {
+                alert('⚠️ Vui lòng nhập Gemini API key!\n\nLấy key miễn phí tại: https://aistudio.google.com/app/apikey');
+                return;
+            }
+
+            const btn = document.getElementById('generateBtn');
+            btn.disabled = true;
+            btn.textContent = '⏳ Đang generate với Gemini AI...';
+
+            try {
+                const response = await fetch('/api/generate-tests', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        formIndex: selectedFormIndex,
+                        apiKey: apiKey
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Failed to generate tests');
+                }
+
+                const data = await response.json();
+                testCases = data.testCases;
+
+                // Initialize test results
+                testResults = {};
+                testCases.forEach((tc, index) => {
+                    testResults[index] = {
+                        testCase: tc,
+                        status: 'pending',
+                        notes: '',
+                        timestamp: null
+                    };
+                });
+
+                displayTestCases();
+
+                btn.textContent = '✅ Test Cases đã generate!';
+                document.getElementById('generateMoreBtn').style.display = 'block';
+            } catch (error) {
+                alert('Lỗi generate test cases: ' + error.message + '\n\nBạn có thể dùng nút "📝 Xuất Prompt" để tạo thủ công.');
+                btn.disabled = false;
+                btn.textContent = '✨ Generate Test Cases với Gemini AI';
+            }
+        });
+
+        // Generate More button
+        document.getElementById('generateMoreBtn').addEventListener('click', () => {
+            document.getElementById('generateMoreSection').style.display = 'block';
+        });
+
+        // Cancel generate more
+        document.getElementById('cancelGenerateMoreBtn').addEventListener('click', () => {
+            document.getElementById('generateMoreSection').style.display = 'none';
+            document.querySelectorAll('.test-type-checkbox').forEach(cb => cb.checked = false);
+        });
+
+        // Confirm generate more
+        document.getElementById('confirmGenerateMoreBtn').addEventListener('click', async () => {
+            const selectedTypes = Array.from(document.querySelectorAll('.test-type-checkbox:checked'))
+                .map(cb => cb.value);
+
+            if (selectedTypes.length === 0) {
+                alert('Vui lòng chọn ít nhất 1 loại test case!');
+                return;
+            }
+
+            const apiKey = getCurrentApiKey();
+            if (!apiKey) {
+                alert('⚠️ Vui lòng nhập Gemini API key!');
+                return;
+            }
+
+            const btn = document.getElementById('confirmGenerateMoreBtn');
+            const originalText = btn.textContent;
+            btn.disabled = true;
+            btn.textContent = '⏳ Đang tạo...';
+
+            try {
+                const response = await fetch('/api/generate-more-tests', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        formIndex: selectedFormIndex,
+                        testTypes: selectedTypes,
+                        apiKey: apiKey
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Failed to generate more tests');
+                }
+
+                const data = await response.json();
+                
+                // Add new test cases to existing ones
+                const startIndex = testCases.length;
+                testCases = testCases.concat(data.testCases);
+
+                // Initialize test results for new test cases
+                data.testCases.forEach((tc, index) => {
+                    testResults[startIndex + index] = {
+                        testCase: tc,
+                        status: 'pending',
+                        notes: '',
+                        timestamp: null
+                    };
+                });
+
+                displayTestCases();
+
+                // Hide generate more section
+                document.getElementById('generateMoreSection').style.display = 'none';
+                document.querySelectorAll('.test-type-checkbox').forEach(cb => cb.checked = false);
+
+                alert(`✅ Đã tạo thêm ${data.testCases.length} test cases!`);
+                btn.disabled = false;
+                btn.textContent = originalText;
+
+            } catch (error) {
+                alert('Lỗi: ' + error.message);
+                btn.disabled = false;
+                btn.textContent = originalText;
+            }
+        });
+
+        // Export prompt (fallback)
+        document.getElementById('exportPromptBtn').addEventListener('click', async () => {
+            if (selectedFormIndex === null) {
+                alert('Vui lòng chọn form trước!');
+                return;
+            }
+
+            const btn = document.getElementById('exportPromptBtn');
+            btn.disabled = true;
+            btn.textContent = '⏳ Đang xuất prompt...';
+
+            try {
+                const response = await fetch('/api/export-prompt', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ formIndex: selectedFormIndex })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to export prompt');
+                }
+
+                const data = await response.json();
+                
+                // Copy to clipboard
+                await navigator.clipboard.writeText(data.prompt);
+                
+                // Show manual input section
+                document.getElementById('manualInputSection').style.display = 'block';
+                
+                alert('✅ Prompt đã được copy vào clipboard!\n\n' +
+                      '📝 Hướng dẫn:\n' +
+                      '1. Mở Gemini AI (https://gemini.google.com)\n' +
+                      '2. Paste prompt (Ctrl+V)\n' +
+                      '3. Copy kết quả JSON từ Gemini\n' +
+                      '4. Paste vào ô bên dưới và click "Parse và Sử dụng"');
+                
+                btn.textContent = '✅ Prompt đã copy!';
+                setTimeout(() => {
+                    btn.disabled = false;
+                    btn.textContent = '📝 Xuất Prompt (Fallback)';
+                }, 3000);
+            } catch (error) {
+                alert('Lỗi: ' + error.message);
+                btn.disabled = false;
+                btn.textContent = '📝 Xuất Prompt (Fallback)';
+            }
+        });
+
+        // Parse manual test cases
+        document.getElementById('parseManualBtn').addEventListener('click', async () => {
+            const input = document.getElementById('manualTestCasesInput').value.trim();
+            
+            if (!input) {
+                alert('Vui lòng paste JSON test cases vào ô trên!');
+                return;
+            }
+
+            const btn = document.getElementById('parseManualBtn');
+            btn.disabled = true;
+            btn.textContent = '⏳ Đang parse...';
+
+            try {
+                const response = await fetch('/api/parse-testcases', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ testCasesJson: input })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Failed to parse test cases');
+                }
+
+                const data = await response.json();
+                testCases = data.testCases;
+
+                // Initialize test results
+                testResults = {};
+                testCases.forEach((tc, index) => {
+                    testResults[index] = {
+                        testCase: tc,
+                        status: 'pending',
+                        notes: '',
+                        timestamp: null
+                    };
+                });
+
+                displayTestCases();
+                
+                // Hide manual input section
+                document.getElementById('manualInputSection').style.display = 'none';
+                document.getElementById('manualTestCasesInput').value = '';
+
+                btn.textContent = '✅ Đã parse thành công!';
+                setTimeout(() => {
+                    btn.disabled = false;
+                    btn.textContent = '✅ Parse và Sử dụng Test Cases';
+                }, 2000);
+            } catch (error) {
+                alert('Lỗi parse JSON: ' + error.message + '\n\nVui lòng kiểm tra lại định dạng JSON.');
+                btn.disabled = false;
+                btn.textContent = '✅ Parse và Sử dụng Test Cases';
+            }
+        });
+
+        function displayTestCases() {
+            const section = document.getElementById('testCasesSection');
+            const listDiv = document.getElementById('testCasesList');
+            const countSpan = document.getElementById('testCaseCount');
+
+            countSpan.textContent = testCases.length;
+
+            listDiv.innerHTML = testCases.map((testCase, index) => `
+                <div class="test-case" id="testCase${index}">
+                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                        <div style="flex: 1;">
+                            <h4>${index + 1}. ${testCase.name}</h4>
+                            <p>${testCase.description}</p>
+                        </div>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                                <input type="checkbox" id="passCheck${index}" onchange="updateTestStatus(${index}, this.checked)" style="width: 20px; height: 20px;">
+                                <span style="font-weight: 600; color: #28a745;">✅ PASS</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="payload-view">
+                        <pre>${JSON.stringify(testCase.payload, null, 2)}</pre>
+                    </div>
+                    <p><strong>Expected:</strong> ${testCase.expectedResult || 'N/A'}</p>
+                    
+                    <div class="test-case-actions">
+                        <button class="btn btn-test" onclick="fillFormOnly(${index})">
+                            🧪 Fill Form (Không Submit)
+                        </button>
+                    </div>
+                    
+                    <!-- Test Notes -->
+                    <div style="margin-top: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">📝 Ghi chú kết quả test:</label>
+                        <textarea 
+                            id="notes${index}" 
+                            placeholder="Ghi chú về kết quả test này (lỗi gặp phải, kết quả thực tế, etc.)..."
+                            onchange="updateTestNotes(${index}, this.value)"
+                            style="width: 100%; min-height: 80px; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-family: inherit;"
+                        ></textarea>
+                    </div>
+                    
+                    <div id="testStatus${index}" style="margin-top: 10px;"></div>
+                </div>
+            `).join('');
+
+            section.style.display = 'block';
+            document.getElementById('exportResultsBtn').style.display = 'block';
+        }
+
+        function updateTestStatus(index, isPassed) {
+            testResults[index].status = isPassed ? 'passed' : 'failed';
+            testResults[index].timestamp = new Date().toISOString();
+            
+            const statusDiv = document.getElementById(`testStatus${index}`);
+            if (isPassed) {
+                statusDiv.innerHTML = '<div style="padding: 10px; background: #d4edda; border: 1px solid #c3e6cb; border-radius: 4px; color: #155724;">✅ Test đã PASS</div>';
+            } else {
+                statusDiv.innerHTML = '<div style="padding: 10px; background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 4px; color: #721c24;">❌ Test đã FAIL</div>';
+            }
+        }
+
+        function updateTestNotes(index, notes) {
+            testResults[index].notes = notes;
+        }
+
+        // Export test results
+        document.getElementById('exportResultsBtn').addEventListener('click', () => {
+            const exportData = {
+                timestamp: new Date().toISOString(),
+                formInfo: {
+                    formId: currentResult.forms[selectedFormIndex].form.formId,
+                    formName: currentResult.forms[selectedFormIndex].form.formName,
+                    url: currentResult.url
+                },
+                testResults: Object.values(testResults).map((result, index) => ({
+                    testCaseNumber: index + 1,
+                    name: result.testCase.name,
+                    description: result.testCase.description,
+                    payload: result.testCase.payload,
+                    expectedResult: result.testCase.expectedResult,
+                    status: result.status,
+                    notes: result.notes,
+                    timestamp: result.timestamp
+                })),
+                summary: {
+                    total: testCases.length,
+                    passed: Object.values(testResults).filter(r => r.status === 'passed').length,
+                    failed: Object.values(testResults).filter(r => r.status === 'failed').length,
+                    pending: Object.values(testResults).filter(r => r.status === 'pending').length
+                }
+            };
+
+            // Create and download JSON file
+            const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `test-results-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            alert('✅ Đã xuất kết quả test thành công!');
+        });
+
+        async function fillFormOnly(testIndex) {
+            const testCase = testCases[testIndex];
+
+            // Show results card
+            const resultsCard = document.getElementById('resultsCard');
+            const resultsDiv = document.getElementById('testResults');
+
+            resultsCard.style.display = 'block';
+            resultsDiv.innerHTML = '<div class="loading"><div class="spinner"></div><p>Đang fill form...</p></div>';
+            resultsCard.scrollIntoView({ behavior: 'smooth' });
+
+            try {
+                const response = await fetch('/api/fill-form-only', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        url: currentResult.url,
+                        formIndex: selectedFormIndex,
+                        payload: testCase.payload,
+                        headless: false
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Fill form failed');
+                }
+
+                const result = await response.json();
+                displayFillResult(testCase, result, testIndex);
+
+            } catch (error) {
+                resultsDiv.innerHTML = `
+                    <div class="test-result failure">
+                        <h3>❌ Fill Failed</h3>
+                        <p><strong>Error:</strong> ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        function displayFillResult(testCase, result, testIndex) {
+            const resultsDiv = document.getElementById('testResults');
+
+            const success = result.fillResult.success;
+            const statusClass = success ? 'success' : 'failure';
+            const statusIcon = success ? '✅' : '❌';
+
+            resultsDiv.innerHTML = `
+                <div class="test-result ${statusClass}">
+                    <h3>${statusIcon} Form đã được điền</h3>
+
+                    <h4>Test Case: ${testCase.name}</h4>
+                    <p>${testCase.description}</p>
+
+                    <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin: 15px 0; border: 2px solid #ffc107;">
+                        <h4 style="margin: 0 0 10px 0;">⚠️ Lưu ý:</h4>
+                        <p style="margin: 0;">Form đã được điền dữ liệu <strong>NHƯNG CHƯA SUBMIT</strong>.</p>
+                        <p style="margin: 5px 0 0 0;">Vui lòng:</p>
+                        <ol style="margin: 5px 0 0 20px; padding: 0;">
+                            <li>Kiểm tra dữ liệu đã được điền chính xác</li>
+                            <li>Tự nhấn nút Submit trên form</li>
+                            <li>Xem kết quả (thành công/lỗi)</li>
+                            <li>Đánh dấu ✅ PASS nếu test thành công</li>
+                            <li>Ghi chú kết quả vào ô bên dưới test case</li>
+                        </ol>
+                    </div>
+
+                    <h4>Fill Result:</h4>
+                    <p><strong>Filled Fields:</strong> ${result.fillResult.filledFields.length}</p>
+                    <div>
+                        ${result.fillResult.filledFields.map(field =>
+                            `<span class="badge badge-success">${field}</span>`
+                        ).join('')}
+                    </div>
+
+                    ${result.fillResult.errors.length > 0 ? `
+                        <h4 style="margin-top: 15px;">Errors:</h4>
+                        ${result.fillResult.errors.map(err =>
+                            `<div class="badge badge-danger">${err.field}: ${err.error}</div>`
+                        ).join('<br>')}
+                    ` : ''}
+
+                    ${result.validationErrors.length > 0 ? `
+                        <h4 style="margin-top: 20px;">Validation Errors:</h4>
+                        ${result.validationErrors.map(err => `
+                            <div style="background: #f8d7da; padding: 10px; border-radius: 4px; margin: 5px 0;">
+                                <strong>${err.field || 'Unknown field'}:</strong> ${err.message}
+                            </div>
+                        `).join('')}
+                    ` : ''}
+
+                    ${result.screenshot ? `
+                        <h4 style="margin-top: 20px;">Screenshot:</h4>
+                        <img src="${result.screenshot}" style="max-width: 100%; border: 2px solid #ddd; border-radius: 8px; margin-top: 10px;">
+                    ` : ''}
+                </div>
+            `;
+
+            // Scroll to test case
+            document.getElementById(`testCase${testIndex}`).scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        async function executeTest(testIndex) {
+            const testCase = testCases[testIndex];
+
+            // Show results card
+            const resultsCard = document.getElementById('resultsCard');
+            const resultsDiv = document.getElementById('testResults');
+
+            resultsCard.style.display = 'block';
+            resultsDiv.innerHTML = '<div class="loading"><div class="spinner"></div><p>Đang execute test...</p></div>';
+            resultsCard.scrollIntoView({ behavior: 'smooth' });
+
+            try {
+                const response = await fetch('/api/execute-test', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        url: currentResult.url,
+                        formIndex: selectedFormIndex,
+                        payload: testCase.payload,
+                        headless: false
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Test execution failed');
+                }
+
+                const result = await response.json();
+                displayTestResult(testCase, result);
+
+            } catch (error) {
+                resultsDiv.innerHTML = `
+                    <div class="test-result failure">
+                        <h3>❌ Test Failed</h3>
+                        <p><strong>Error:</strong> ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        function displayTestResult(testCase, result) {
+            const resultsDiv = document.getElementById('testResults');
+
+            const success = result.fillResult.success && result.validationErrors.length === 0;
+            const statusClass = success ? 'success' : 'failure';
+            const statusIcon = success ? '✅' : '❌';
+            const statusText = success ? 'Test Passed' : 'Test Failed';
+
+            resultsDiv.innerHTML = `
+                <div class="test-result ${statusClass}">
+                    <h3>${statusIcon} ${statusText}</h3>
+
+                    <h4>Test Case: ${testCase.name}</h4>
+                    <p>${testCase.description}</p>
+
+                    <h4 style="margin-top: 20px;">Fill Result:</h4>
+                    <p><strong>Filled Fields:</strong> ${result.fillResult.filledFields.length}</p>
+                    <div>
+                        ${result.fillResult.filledFields.map(field =>
+                            `<span class="badge badge-success">${field}</span>`
+                        ).join('')}
+                    </div>
+
+                    ${result.fillResult.errors.length > 0 ? `
+                        <h4 style="margin-top: 15px;">Errors:</h4>
+                        ${result.fillResult.errors.map(err =>
+                            `<div class="badge badge-danger">${err.field}: ${err.error}</div>`
+                        ).join('<br>')}
+                    ` : ''}
+
+                    ${result.validationErrors.length > 0 ? `
+                        <h4 style="margin-top: 15px;">Validation Errors:</h4>
+                        ${result.validationErrors.map(err =>
+                            `<div class="badge badge-warning">${err}</div>`
+                        ).join('<br>')}
+                    ` : ''}
+
+                    ${result.screenshot ? `
+                        <div class="screenshot-view">
+                            <h4>Screenshot:</h4>
+                            <img src="${result.screenshot}" alt="Test Screenshot">
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        // Load on page load
+        loadAnalysisResult();
+        loadApiKey();
+
+        // Help Modal (copy from index.html)
+        const helpBtn = document.getElementById('helpBtn');
+        const helpModal = document.getElementById('helpModal');
+        const closeModal = document.getElementById('closeModal');
+
+        if (helpBtn && helpModal && closeModal) {
+            helpBtn.addEventListener('click', () => {
+                helpModal.classList.add('show');
+            });
+
+            closeModal.addEventListener('click', () => {
+                helpModal.classList.remove('show');
+            });
+
+            helpModal.addEventListener('click', (e) => {
+                if (e.target === helpModal) {
+                    helpModal.classList.remove('show');
+                }
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && helpModal.classList.contains('show')) {
+                    helpModal.classList.remove('show');
+                }
+            });
+        }
+    </script>
+
+    <!-- Help Button -->
+    <button class="help-button" id="helpBtn" title="Hướng dẫn AI Testing" style="width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; font-size: 28px; cursor: pointer; box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4); position: fixed; bottom: 30px; right: 30px; z-index: 1000; display: flex; align-items: center; justify-content: center; transition: all 0.3s;">
+        ?
+    </button>
+
+    <!-- Help Modal -->
+    <div id="helpModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; align-items: center; justify-content: center;">
+        <div style="background: white; border-radius: 20px; max-width: 700px; width: 90%; max-height: 90vh; overflow-y: auto;">
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 25px; border-radius: 20px 20px 0 0; display: flex; justify-content: space-between; align-items: center;">
+                <h2 style="margin: 0;">🤖 Hướng dẫn AI Testing</h2>
+                <button id="closeModal" style="background: rgba(255,255,255,0.2); border: none; color: white; font-size: 28px; width: 40px; height: 40px; border-radius: 50%; cursor: pointer;">×</button>
+            </div>
+            <div style="padding: 30px; color: #555; line-height: 1.8;">
+                <h3 style="color: #667eea; margin-bottom: 15px;">📋 Quy trình AI Testing</h3>
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 12px; margin: 15px 0;">
+                    <p><strong>Bước 1:</strong> Chọn form cần test từ danh sách</p>
+                    <p><strong>Bước 2:</strong> Click "Generate Test Cases với Gemini AI"</p>
+                    <p><strong>Bước 3:</strong> AI tạo 7 test cases tự động</p>
+                    <p><strong>Bước 4:</strong> Click "Execute Test" cho từng test</p>
+                    <p><strong>Bước 5:</strong> Xem kết quả + screenshot</p>
+                </div>
+
+                <h3 style="color: #667eea; margin: 25px 0 15px;">🎯 7 loại test được tạo</h3>
+                <ul style="list-style: none; padding: 0;">
+                    <li style="margin: 10px 0;">✅ <strong>Valid Input:</strong> Dữ liệu hợp lệ</li>
+                    <li style="margin: 10px 0;">📏 <strong>Boundary:</strong> Giá trị min/max</li>
+                    <li style="margin: 10px 0;">❌ <strong>Invalid:</strong> Dữ liệu không hợp lệ</li>
+                    <li style="margin: 10px 0;">⚠️ <strong>Missing Required:</strong> Thiếu field bắt buộc</li>
+                    <li style="margin: 10px 0;">🔤 <strong>Special Chars:</strong> Ký tự đặc biệt</li>
+                    <li style="margin: 10px 0;">🛡️ <strong>SQL Injection:</strong> Test bảo mật SQL</li>
+                    <li style="margin: 10px 0;">🔒 <strong>XSS:</strong> Test bảo mật XSS</li>
+                </ul>
+
+                <h3 style="color: #667eea; margin: 25px 0 15px;">💡 Tips</h3>
+                <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; border-radius: 8px;">
+                    <p style="margin: 5px 0;"><strong>• Test Valid trước:</strong> Đảm bảo form hoạt động</p>
+                    <p style="margin: 5px 0;"><strong>• Xem screenshot:</strong> Hiểu test đang làm gì</p>
+                    <p style="margin: 5px 0;"><strong>• Check validation:</strong> Xem form có validate đúng không</p>
+                    <p style="margin: 5px 0;"><strong>• Test security:</strong> SQL Injection & XSS quan trọng!</p>
+                </div>
+
+                <h3 style="color: #667eea; margin: 25px 0 15px;">📸 Kết quả test gồm</h3>
+                <p>✅ Status (Pass/Fail)</p>
+                <p>📝 Filled Fields (các field đã điền)</p>
+                <p>⚠️ Validation Errors (lỗi validation)</p>
+                <p>🖼️ Screenshot (ảnh chụp màn hình)</p>
+
+                <div style="background: #d4edda; border-left: 4px solid #28a745; padding: 15px; border-radius: 8px; margin-top: 20px;">
+                    <strong style="color: #155724;">🎉 AI làm hết, bạn chỉ cần click!</strong><br>
+                    Không cần viết test cases, AI sẽ tạo tất cả cho bạn.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .help-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 30px rgba(102, 126, 234, 0.6) !important;
+        }
+        #helpModal.show {
+            display: flex !important;
+        }
+        #closeModal:hover {
+            background: rgba(255,255,255,0.3) !important;
+            transform: rotate(90deg);
+        }
+    </style>
+</body>
+</html>

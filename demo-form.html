@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo Form - Test Web Black Box Tool</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .form-container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #333;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="tel"],
+        input[type="number"],
+        input[type="date"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        .radio-group,
+        .checkbox-group {
+            margin: 10px 0;
+        }
+        .radio-group label,
+        .checkbox-group label {
+            display: inline-block;
+            font-weight: normal;
+            margin-right: 20px;
+            cursor: pointer;
+        }
+        input[type="radio"],
+        input[type="checkbox"] {
+            margin-right: 5px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .required {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="text-align: center;">Demo Forms - Web Testing Tool</h1>
+
+    <!-- Form 1: Registration Form -->
+    <div class="form-container">
+        <h2>Form 1: Đăng ký tài khoản</h2>
+        <form id="registrationForm" name="registration" action="/register" method="POST">
+            <div class="form-group">
+                <label for="fullName">Họ và tên <span class="required">*</span></label>
+                <input type="text" id="fullName" name="fullName" required placeholder="Nguyễn Văn A">
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email <span class="required">*</span></label>
+                <input type="email" id="email" name="email" required placeholder="example@email.com">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Mật khẩu <span class="required">*</span></label>
+                <input type="password" id="password" name="password" required placeholder="Tối thiểu 8 ký tự">
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Số điện thoại</label>
+                <input type="tel" id="phone" name="phone" placeholder="0901234567">
+            </div>
+
+            <div class="form-group">
+                <label for="birthDate">Ngày sinh <span class="required">*</span></label>
+                <input type="date" id="birthDate" name="birthDate" required>
+            </div>
+
+            <div class="form-group">
+                <label>Giới tính <span class="required">*</span></label>
+                <div class="radio-group">
+                    <label><input type="radio" name="gender" value="male" required> Nam</label>
+                    <label><input type="radio" name="gender" value="female"> Nữ</label>
+                    <label><input type="radio" name="gender" value="other"> Khác</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="country">Quốc gia <span class="required">*</span></label>
+                <select id="country" name="country" required>
+                    <option value="">-- Chọn quốc gia --</option>
+                    <option value="VN">Việt Nam</option>
+                    <option value="TH">Thái Lan</option>
+                    <option value="SG">Singapore</option>
+                    <option value="MY">Malaysia</option>
+                    <option value="PH">Philippines</option>
+                    <option value="ID">Indonesia</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="city">Thành phố</label>
+                <select id="city" name="city">
+                    <option value="">-- Chọn thành phố --</option>
+                    <option value="HN">Hà Nội</option>
+                    <option value="HCM">TP. Hồ Chí Minh</option>
+                    <option value="DN">Đà Nẵng</option>
+                    <option value="HP">Hải Phòng</option>
+                    <option value="CT">Cần Thơ</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Sở thích</label>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" name="hobbies" value="reading"> Đọc sách</label>
+                    <label><input type="checkbox" name="hobbies" value="music"> Âm nhạc</label>
+                    <label><input type="checkbox" name="hobbies" value="sports"> Thể thao</label>
+                    <label><input type="checkbox" name="hobbies" value="travel"> Du lịch</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="bio">Giới thiệu bản thân</label>
+                <textarea id="bio" name="bio" placeholder="Viết vài dòng về bạn..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" name="terms" required>
+                    Tôi đồng ý với <a href="#">điều khoản sử dụng</a> <span class="required">*</span>
+                </label>
+            </div>
+
+            <button type="submit">Đăng ký</button>
+        </form>
+    </div>
+
+    <!-- Form 2: Contact Form -->
+    <div class="form-container">
+        <h2>Form 2: Liên hệ</h2>
+        <form id="contactForm" name="contact" action="/contact" method="POST">
+            <div class="form-group">
+                <label for="contactName">Tên của bạn <span class="required">*</span></label>
+                <input type="text" id="contactName" name="name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="contactEmail">Email <span class="required">*</span></label>
+                <input type="email" id="contactEmail" name="email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="subject">Chủ đề <span class="required">*</span></label>
+                <select id="subject" name="subject" required>
+                    <option value="">-- Chọn chủ đề --</option>
+                    <option value="support">Hỗ trợ kỹ thuật</option>
+                    <option value="sales">Tư vấn bán hàng</option>
+                    <option value="feedback">Góp ý</option>
+                    <option value="other">Khác</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="priority">Mức độ ưu tiên</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="priority" value="low"> Thấp</label>
+                    <label><input type="radio" name="priority" value="medium" checked> Trung bình</label>
+                    <label><input type="radio" name="priority" value="high"> Cao</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="message">Nội dung <span class="required">*</span></label>
+                <textarea id="message" name="message" required placeholder="Nhập nội dung tin nhắn..."></textarea>
+            </div>
+
+            <button type="submit">Gửi tin nhắn</button>
+        </form>
+    </div>
+
+    <!-- Form 3: Job Application -->
+    <div class="form-container">
+        <h2>Form 3: Ứng tuyển việc làm</h2>
+        <form id="jobForm" name="jobApplication" action="/apply" method="POST">
+            <div class="form-group">
+                <label for="applicantName">Họ tên <span class="required">*</span></label>
+                <input type="text" id="applicantName" name="fullName" required>
+            </div>
+
+            <div class="form-group">
+                <label for="applicantEmail">Email <span class="required">*</span></label>
+                <input type="email" id="applicantEmail" name="email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="position">Vị trí ứng tuyển <span class="required">*</span></label>
+                <select id="position" name="position" required>
+                    <option value="">-- Chọn vị trí --</option>
+                    <option value="frontend">Frontend Developer</option>
+                    <option value="backend">Backend Developer</option>
+                    <option value="fullstack">Fullstack Developer</option>
+                    <option value="qa">QA Engineer</option>
+                    <option value="devops">DevOps Engineer</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="experience">Số năm kinh nghiệm <span class="required">*</span></label>
+                <input type="number" id="experience" name="experience" min="0" max="50" required>
+            </div>
+
+            <div class="form-group">
+                <label for="expectedSalary">Mức lương mong muốn (USD)</label>
+                <input type="number" id="expectedSalary" name="salary" min="0" step="100">
+            </div>
+
+            <div class="form-group">
+                <label>Hình thức làm việc <span class="required">*</span></label>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" name="workType" value="fulltime"> Full-time</label>
+                    <label><input type="checkbox" name="workType" value="parttime"> Part-time</label>
+                    <label><input type="checkbox" name="workType" value="remote"> Remote</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="coverLetter">Thư giới thiệu</label>
+                <textarea id="coverLetter" name="coverLetter" placeholder="Tại sao bạn phù hợp với vị trí này?"></textarea>
+            </div>
+
+            <button type="submit">Nộp đơn</button>
+        </form>
+    </div>
+
+    <script>
+        // Prevent actual form submission for demo
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                alert('Demo form - không submit thực sự');
+            });
+        });
+    </script>
+</body>
+</html>
