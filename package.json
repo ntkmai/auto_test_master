@@ -8,7 +8,8 @@
     "start": "node dist/index.js",
     "dev": "ts-node src/index.ts",
     "test-demo": "ts-node test-demo.ts",
-    "server": "ts-node server.ts"
+    "server": "ts-node server.ts",
+    "quick-start": "npm run build && npm run server"
   },
   "keywords": [
     "testing",
